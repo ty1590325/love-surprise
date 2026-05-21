@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给你的专属惊喜 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* 页面容器 */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* 开场页 */
+        .opening {
+            text-align: center;
+            color: white;
+        }
+
+        .heart {
+            font-size: 80px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 时间轴页面 */
+        .timeline-page {
+            background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .timeline-container {
+            width: 100%;
+            max-width: 400px;
+            height: 70vh;
+            overflow-y: auto;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-container::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #ff6b6b, #ee5a6f);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 25px;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.6s forwards;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -22px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #ff6b6b;
+        }
+
+        .timeline-date {
+            font-size: 14px;
+            color: #ee5a6f;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .timeline-text {
+            font-size: 16px;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* 照片墙 */
+        .gallery-page {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .gallery-title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .photo-card {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .photo-card:active {
+            transform: scale(0.95);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 40px;
+        }
+
+        .photo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            color: white;
+            padding: 20px 10px 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* 情书页 */
+        .letter-page {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background: #ff6b6b;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .envelope:active {
+            transform: scale(0.98);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid #ff5252;
+            transform-origin: bottom;
+            transition: transform 0.6s;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .letter-paper {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            transform: translateY(0);
+            transition: transform 0.8s 0.3s;
+            overflow: hidden;
+        }
+
+        .envelope.open .letter-paper {
+            transform: translateY(-180px);
+        }
+
+        .letter-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            text-align: center;
+        }
+
+        /* 烟花/表白页 */
+        .fireworks-page {
+            background: #000;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .love-text {
+            position: relative;
+            z-index: 10;
+            color: white;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .love-text h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 100, 100, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 100, 100, 0.8); }
+            to { text-shadow: 0 0 40px rgba(255, 100, 100, 1), 0 0 60px rgba(255, 100, 100, 0.6); }
+        }
+
+        /* 飘落的花瓣 */
+        .petal {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: pink;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.7;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 进度指示器 */
+        .progress {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 打字机效果 */
+        .typewriter {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid white;
+            animation: typing 3s steps(20) forwards, blink 0.7s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* 响应式 */
+        @media (max-height: 700px) {
+            .heart { font-size: 60px; }
+            .title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 飘落花瓣容器 -->
+    <div id="petals-container"></div>
+
+    <!-- 第1页：开场 -->
+    <div class="page active" id="page1">
+        <div class="opening">
+            <div class="heart">💖</div>
+            <h1 class="title">嘿，宝贝</h1>
+            <p class="subtitle">有一份专属惊喜等你开启...</p>
+            <button class="btn" onclick="nextPage()">点击开启 ✨</button>
+        </div>
+    </div>
+
+    <!-- 第2页：时光轴 -->
+    <div class="page timeline-page" id="page2">
+        <h2 style="color: #333; margin-bottom: 20px; font-size: 22px;">我们的时光 ✨</h2>
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">第一次相遇</div>
+                <div class="timeline-text">那一天，阳光正好，你走进了我的世界，从此一切都变得不一样了 💫</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">第一次牵手</div>
+                <div class="timeline-text">手心传来的温度，让我知道这就是我想要一直牵着的手 🤝</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">每一个日常</div>
+                <div class="timeline-text">和你在一起的每一天，平凡的瞬间都变得闪闪发光 🌟</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">未来的每一天</div>
+                <div class="timeline-text">想和你一起看更多的风景，创造更多属于我们的回忆 🌈</div>
+            </div>
+        </div>
+        <button class="btn" style="margin-top: 20px; background: rgba(255,107,107,0.3); border-color: #ff6b6b; color: #ff6b6b;" onclick="nextPage()">继续 →</button>
+    </div>
+
+    <!-- 第3页：照片墙 -->
+    <div class="page gallery-page" id="page3">
+        <h2 class="gallery-title">我们的瞬间 📸</h2>
+        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">点击卡片查看回忆</p>
+        <div class="photo-grid">
+            <div class="photo-card" onclick="showPhoto(1)">
+                <div class="photo-placeholder">
+                    <span>🥰</span>
+                </div>
+                <div class="photo-label">最甜的笑容</div>
+            </div>
+            <div class="photo-card" onclick="showPhoto(2)">
+                <div class="photo-placeholder">
+                    <span>🌅</span>
+                </div>
+                <div class="photo-label">一起看日落</div>
+            </div>
+            <div class="photo-card" onclick="showPhoto(3)">
+                <div class="photo-placeholder">
+                    <span>🍜</span>
+                </div>
+                <div class="photo-label">美食时光</div>
+            </div>
+            <div class="photo-card" onclick="showPhoto(4)">
+                <div class="photo-placeholder">
+                    <span>✈️</span>
+                </div>
+                <div class="photo-label">旅行足迹</div>
+            </div>
+        </div>
+        <button class="btn" style="margin-top: 30px; background: rgba(102,126,234,0.2); border-color: #667eea; color: #667eea;" onclick="nextPage()">还有惊喜 →</button>
+    </div>
+
+    <!-- 第4页：情书 -->
+    <div class="page letter-page" id="page4">
+        <h2 style="color: #333; margin-bottom: 30px;">一封情书 💌</h2>
+        <div class="envelope" id="envelope" onclick="openLetter()">
+            <div class="envelope-flap"></div>
+            <div class="letter-paper">
+                <div class="letter-text">
+                    <p style="font-size: 18px; font-weight: bold; color: #ff6b6b; margin-bottom: 15px;">致最爱的你：</p>
+                    <p>遇见你，是我这辈子最美好的意外。</p>
+                    <p style="margin-top: 10px;">你的笑容是我每天的阳光，</p>
+                    <p>你的声音是我最爱的旋律。</p>
+                    <p style="margin-top: 10px;">我想陪你走过四季，</p>
+                    <p>看遍世间所有美好。</p>
+                    <p style="margin-top: 20px; font-weight: bold;">永远爱你 ❤️</p>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 30px; color: #666; font-size: 14px;">点击信封打开</p>
+        <button class="btn hidden" id="letterBtn" style="margin-top: 20px; background: rgba(255,107,107,0.3); border-color: #ff6b6b; color: #ff6b6b;" onclick="nextPage()">最后惊喜 →</button>
+    </div>
+
+    <!-- 第5页：烟花表白 -->
+    <div class="page fireworks-page" id="page5">
+        <canvas id="canvas"></canvas>
+        <div class="love-text">
+            <h1>我爱你</h1>
+            <p style="font-size: 20px; opacity: 0.9;">不止今天，是每一天</p>
+            <p style="margin-top: 30px; font-size: 16px; opacity: 0.7;">—— 你的专属程序员 💻❤️</p>
+        </div>
+    </div>
+
+    <!-- 进度指示 -->
+    <div class="progress" id="progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 5;
+
+        // 页面切换
+        function nextPage() {
+            const current = document.getElementById(`page${currentPage}`);
+            const next = document.getElementById(`page${currentPage + 1}`);
+            
+            if (currentPage < totalPages) {
+                current.classList.remove('active');
+                setTimeout(() => {
+                    current.style.display = 'none';
+                    next.style.display = 'flex';
+                    setTimeout(() => next.classList.add('active'), 50);
+                }, 800);
+                
+                currentPage++;
+                updateProgress();
+                
+                // 特殊页面初始化
+                if (currentPage === 5) {
+                    initFireworks();
+                    document.getElementById('progress').style.display = 'none';
+                }
+            }
+        }
+
+        function updateProgress() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index < currentPage);
+            });
+        }
+
+        // 打开信封
+        function openLetter() {
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('open');
+            setTimeout(() => {
+                document.getElementById('letterBtn').classList.remove('hidden');
+            }, 1000);
+        }
+
+        // 照片点击效果
+        function showPhoto(id) {
+            const messages = [
+                '你的笑容比阳光还灿烂 ☀️',
+                '和你一起看日落是最浪漫的事 🌇',
+                '和你吃饭总是最香的 🍽️',
+                '下一站，我们去更多地方 🗺️'
+            ];
+            
+            // 创建临时提示
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 20px 30px;
+                border-radius: 20px;
+                font-size: 16px;
+                z-index: 1000;
+                animation: fadeInOut 2s forwards;
+            `;
+            toast.textContent = messages[id - 1];
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 生成花瓣
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            petal.style.opacity = Math.random() * 0.5 + 0.3;
+            petal.style.background = ['#ffb6c1', '#ffc0cb', '#ff69b4', '#ffa07a'][Math.floor(Math.random() * 4)];
+            document.getElementById('petals-container').appendChild(petal);
+            
+            setTimeout(() => petal.remove(), 7000);
+        }
+
+        setInterval(createPetal, 800);
+
+        // 烟花效果
+        function initFireworks() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff9ff3', '#feca57'];
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.velocity = {
+                        x: (Math.random() - 0.5) * 8,
+                        y: (Math.random() - 0.5) * 8
+                    };
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.01;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                update() {
+                    this.velocity.x *= 0.98;
+                    this.velocity.y *= 0.98;
+                    this.velocity.y += 0.05;
+                    this.x += this.velocity.x;
+                    this.y += this.velocity.y;
+                    this.alpha -= this.decay;
+                }
+            }
+
+            function createFirework(x, y) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            function animate() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((particle, index) => {
+                    if (particle.alpha > 0) {
+                        particle.draw();
+                        particle.update();
+                    } else {
+                        particles.splice(index, 1);
+                    }
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            // 自动放烟花
+            setInterval(() => {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.6 + 50;
+                createFirework(x, y);
+            }, 800);
+
+            // 点击放烟花
+            canvas.addEventListener('click', (e) => {
+                createFirework(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // 阻止微信下拉刷新
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.timeline-container')) return;
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
